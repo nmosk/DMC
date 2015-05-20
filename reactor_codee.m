@@ -35,11 +35,15 @@ x0 = [10^7;10^7;10^7;10^7;      % flow rates    G,L,E,W
         1;1;        % rates of reaction mol/l/hr, r1,r2
         30]          % molar density
 
-V = 50; % L guess reactor volume
+V = 1000; % L guess reactor volume
 MR = 10; % molar ratio of meOH to O2
 
 f = @(x)design_system2(x,P,y0,KH_O2,dens_me,dens_w,dens_dmc,k_1,k_2,n_DMC,V,MR)
 
 options = optimoptions('fsolve','Display','iter','TolX',10^-6.5)
-[x,values] = fsolve(f,x0,options)
+[x,should_be_zero] = fsolve(f,x0,options)
+
+solved_DMC_mol_per_hr = real(x(4))*real(x(8))
+yO2_comps = x(5)
+
 
