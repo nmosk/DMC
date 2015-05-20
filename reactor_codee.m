@@ -35,7 +35,7 @@ x0 = [10^7;10^7;10^7;10^7;      % flow rates    G,L,E,W
         1;1;        % rates of reaction mol/l/hr, r1,r2
         30]          % molar density
 
-V = 1000; % L guess reactor volume
+V = 100 ; % L guess reactor volume
 MR = 10; % molar ratio of meOH to O2
 
 f = @(x)design_system2(x,P,y0,KH_O2,dens_me,dens_w,dens_dmc,k_1,k_2,n_DMC,V,MR)
@@ -46,4 +46,5 @@ options = optimoptions('fsolve','Display','iter','TolX',10^-6.5)
 solved_DMC_mol_per_hr = real(x(4))*real(x(8))
 yO2_comps = x(5)
 
-
+conv= (x(1) * y0-x(1) * x(5)) / ( x(1) * y0 )
+selectivity= (x(4) * x(8)) / (x(1)* y0-x(1) * x(5))
