@@ -29,15 +29,17 @@ k_2 = k2(T);
 % flowrate DMC production [mol/hr]
 n_DMC = 198000;
 
-x0 = [1;1;1;1;      % flow rates
-        0.02;0.88;0.10;      %vapor composition
-        0.1;0.8;        % liquid comp
-        1;1;        % rates of reaction mol/l/hr
+x0 = [10^7;10^7;10^7;10^7;      % flow rates    G,L,E,W
+        0.02;0.88;0.10;      %vapor composition O2, CO,CO2
+        0.1;0.8;        % liquid comp       DMC, me
+        1;1;        % rates of reaction mol/l/hr, r1,r2
         30]          % molar density
 
-V = 100; % L guess reactor volume
+V = 50; % L guess reactor volume
 MR = 10; % molar ratio of meOH to O2
 
 f = @(x)design_system2(x,P,y0,KH_O2,dens_me,dens_w,dens_dmc,k_1,k_2,n_DMC,V,MR)
 
-[x,values] = fsolve(f,x0)
+options = optimoptions('fsolve','Display','iter','TolX',10^-6.5)
+[x,values] = fsolve(f,x0,options)
+
