@@ -22,7 +22,7 @@ k1 = @(T)((1.4 * 10^11) * exp(-24000./(r*(T+273))))
 k2 = @(T)(5.6 * 10^12 * exp(-22700./r./(T+273)))
 
 % Temperature [C] and rate constants [L/mol/s]
-T = 80;
+T = 130;
 k_1 = k1(T);
 k_2 = k2(T);
 
