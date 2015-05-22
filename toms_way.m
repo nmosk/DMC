@@ -32,15 +32,15 @@ n_DMC = 198000;
 x0 = [6*10^5;6*10^6;        % L, F_gas_in   [mol/hr]
     100;5*10^6;100;     % F_o2, F_co, F_co2   [mol/hr]
     5*10^5;198000;        % F_me, F_dmc   [mol/hr]
-    198;5;              % r1, r2    [mol/L/hr] (converted from s to hr in function code)
+    5;5;              % r1, r2    [mol/L/hr] (converted from s to hr in function code)
     20]                 % density [mol/L]
     
-MR = 3; % molar ratio of meOH to O2
+MR = 4; % molar ratio of meOH to O2
 
 selectivity = [];
 conversion = [];
 
-for V = 100:50:1000
+for V = 12000:1000:50000
 
 f = @(x)toms_syst(x,P,y0,KH_O2,dens_me,dens_w,dens_dmc,k_1,k_2,n_DMC,V,MR)
 
