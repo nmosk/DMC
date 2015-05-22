@@ -6,7 +6,7 @@ clear;
 P = 40; %Bar
 y0 = 0.035; % O2 concentration at gas inlet (MR of CO to O2)
 T = 130; % C
-MR = 15; % MeOH to O2 ratio
+MR = 14; % MeOH to O2 ratio
 
 % flowrate DMC production [mol/hr]
 n_DMC = 198000;
@@ -53,7 +53,11 @@ conversion1 = [conversion1;conv];
 selectivity1 = [selectivity1;sel];
 end
 
-
 plot(conversion1,selectivity1,'-o')
 xlabel('conversion, x'); ylabel('selectivity, s')
+title('T = 130, P = 40 bar, y0 = 0.035')
+
+figure(2)
+plot(conversion1,V,'-o')
+xlabel('conversion, x'); ylabel('volume, V [L]')
 title('T = 130, P = 40 bar, y0 = 0.035')
