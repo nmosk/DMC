@@ -7,8 +7,8 @@ function X = toms_syst(x,P,y0,KH_O2,dens_me,dens_w,dens_dmc,k_1,k_2,n_DMC,V,MR)
 s_per_hr = 3600;
 
 % x vector
-% 1 = meOH in [mol/hr]
-% 2 = gas in (O2 + CO) [mol/hr]
+% 1 = MeOH in [mol/hr]
+% 2 = Feed gas in (O2 + CO) [mol/hr]
 % 3 = O2 out [mol/hr]
 % 4 = CO out [mol/hr]
 % 5 = CO2 out [mol/hr]
