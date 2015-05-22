@@ -7,8 +7,8 @@ k2 = @(T)(5.6 * 10^12 * exp(-22700./R./(T+273)))
 
 temps = 80:130;
 
-plot(temps,100*k1(temps),temps,k2(temps))
+plot(temps,k1(temps)./k2(temps))
 xlabel('T (celcius)')
-ylabel('k (concentrations/s)')
+ylabel('Ratio of rate constants')
 
-legend('k1 * 100','k2')
+legend('k1/k2')
