@@ -4,8 +4,8 @@ clear;
 
 r = 1.987; % cal/mol/K
 R = 0.08314; % bar L / mol K
-P = 10; %Bar
-y0 = 0.03; % O2 concentration at gas inlet (MR of CO to O2)
+P = 40; %Bar
+y0 = 0.01; % O2 concentration at gas inlet (MR of CO to O2)
 
 % Henry's constant [bar]
 KH_O2 = 3179;
@@ -22,7 +22,7 @@ k1 = @(T)((1.4 * 10^11) * exp(-24000./(r*(T+273))))
 k2 = @(T)(5.6 * 10^12 * exp(-22700./(r*(T+273))))
 
 % Temperature [C] and rate constants [L/mol/s]-ish
-T = 80;
+T = 130;
 k_1 = k1(T);
 k_2 = k2(T);
 
@@ -35,12 +35,12 @@ x0 = [6*10^5;6*10^6;        % L, F_gas_in   [mol/hr]
     5;5;              % r1, r2    [mol/L/hr] (converted from s to hr in function code)
     20]                 % density [mol/L]
     
-MR = 4; % molar ratio of meOH to O2
+MR = 5; % molar ratio of meOH to O2
 
 selectivity = [];
 conversion = [];
 
-for V = 12000:1000:50000
+for V = 100:20:2000
 
 f = @(x)toms_syst(x,P,y0,KH_O2,dens_me,dens_w,dens_dmc,k_1,k_2,n_DMC,V,MR)
 
