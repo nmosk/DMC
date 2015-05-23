@@ -39,12 +39,12 @@ x0 = [6*10^5;6*10^6;        % L, F_gas_in   [mol/hr]
     5;5;              % r1, r2    [mol/L/hr] (converted from s to hr in function code)
     20]                 % density [mol/L]
     
+n = 100
 selectivity = [];
 conversion = [];
-V = logspace(1.8,3);
-for i = 1:50
+V = logspace(1.8,3,n);
+for i = 1:n
 f = @(x)toms_syst(x,P,y0,KH_O2,dens_me,dens_w,dens_dmc,k_1,k_2,n_DMC,V(i),MR);
-%options = optimoptions('fsolve','Display','iter','TolX',10^-10,'MaxIter',1000,'MaxFunEvals',10000)
 [x,should_be_zero] = fsolve(f,x0);
 solved_DMC_mol_per_hr = x(7);
 conv = (x(2) * y0 - x(3)) / ( x(2) * y0 );
@@ -61,11 +61,3 @@ figure(2)
 plot(conversion,V,'-o')
 xlabel('conversion, x'); ylabel('volume, V [L]')
 title('T = 130, P = 40 bar, y0 = 0.035')
-
-
-[EP,WC]=EP_DMC(selectivity,MR,conversion,n_DMC)
-
-[Profit_AT_SV,H_E,SV,P_BT,ROI_BT, reac, V_ft, D_fact ,WC_CF ,PO_CF ,  TCI, H, D, FC,TI, SU, WCap, Profit_BT, Profit_AT, C_F, Cashflow_d, Bond_Fin, D_CF, NPV_0, NPV_proj,NPV_percent,Depreciation] = conceptual_econ_DMC(V, WC, EP,conversion)
-
-plot(conversion,NPV_percent,conversion, ROI_BT)
-legend('NPV','ROI')
