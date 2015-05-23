@@ -99,3 +99,10 @@ plot(conversion1,selectivity1,'-o',conversion2,selectivity2,'-d',conversion3,sel
     conversion4,selectivity4,'-s')
 xlabel('conversion, x'); ylabel('selectivity, s')
 title('T = 90, P = 25 bar, y0 = 0.01')
+
+figure(2)
+plot(conversion1,V,'-o',conversion2,V,'-d',conversion3,V,'-v',...
+    conversion4,V,'-s')
+xlabel('conversion, x'); ylabel('volume, V [L]')
+title('T = 90, P = 25 bar, y0 = 0.01')
+legend('MR = 20','MR = 2','MR = 8','MR = 14','Location','Northwest')
