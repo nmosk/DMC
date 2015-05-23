@@ -1,0 +1,322 @@
+% DESCRIPTION -------------------------------------------
+% This script is the Discount Cash Flow Analysis function
+% Performs the economic analysis for the conceptual design portion of the
+% project. Outputs different economic information for different diameters
+% of different volumes. Specifically calculates ROI_BT, TCI, and NPV
+% values.
+
+% Inputs V, WC, EP, X
+%   Corresponding indices from V and X correspond with each other
+%       I.E: V(5) corresponds with X(5)
+%   Similarily, corresponding indices from EP and WC match V and X
+%       I.E: EP(3) -> WC(3) -> V(3) -> X(3)
+
+% Is used in the mainscript of the PFR code
+
+% NOTE:
+%   1) WC is calculated in this function. WC from EP function is unused.
+%      WC is calculated as 20% of FC as calculated in a Discounted Cash
+%      Flow analysis.
+
+%   2) Most values are outputted in arrays
+%   Arrays outputted from this function are structured as follows:
+% I.E: ARRAY= [
+%               D: j = 1 , 2 , 3 , 4 ... N
+%           V: i =  1  #   #   #   # ... #
+%                   2  #   #   #   # ... #
+%                   3  #   #   #   # ... #
+%                   4  #   #   #   # ... #
+%                   .  .   .   .   . ... #
+%                   .  .   .   .   . ... #
+%                   .  .   .   .   . ... #
+%                   N  #   #   #   # ... #   ]
+%   3) Outputs of TCI, NPVs, ROI_BT: plot ONLY the diagonals
+% -------------------------------------------------------
+
+% ABBREVIATIONS of SPECIES ------------------------------
+% ethylbenzene -> eB
+% styrene -> St
+% benzene -> B
+% toulene -> T
+% ethylene -> eN
+% hydrogen -> H2
+% methane -> Me
+% water-> H20
+% -------------------------------------------------------
+
+function [Profit_AT_SV,H_E,SV,P_BT,ROI_BT, reac, V_ft, D_fact ,WC_CF ,PO_CF ,  TCI, H, D, FC,TI, SU, WCap, Profit_BT, Profit_AT, C_F, Cashflow_d, Bond_Fin, D_CF, NPV_0, NPV_proj,NPV_percent,Depreciation] = conceptual_econ_DMC(V, WC, EP,X)
+close all
+
+% DISCOUNT CASH FLOW ANALYSIS COEFFICIENTS --------------
+
+
+% Construction factor ___________________________________
+
+% Correction factor for pressure vessels_ shell material
+F_m=1;
+
+% Correction factor for pressure vessels: pressure
+F_p=1;
+
+% Correction factor for distillation column
+F_s=2.2;
+
+% Calculating construction factor F_c
+F_c=F_m*F_p;
+
+% ______________________________________________________
+
+% Finance rate
+FR=.04;
+
+% Tax rate
+TR=.48;
+
+% Enterprise rate
+ER=0.08;
+
+% Marshall and Swift cost index
+MAS=1600;
+
+% 'a' coefficients
+an3=0.00;
+an2=0.00;
+an1=0.50;
+a0=0.50;
+
+format long
+
+% Number of constructions
+Nconst=2; % Nconstructions
+
+% Number of operations
+Nop=10; %Noperations
+
+% Alpha values
+alphaSU=.1;
+alphasv=0.03; %alpha salvage value
+
+% Installation factor
+IF=2.18; %installation factor for labor, foundations, supports, etc
+
+% Construction rate
+CR=.06; %Construction rate -- chosen independently
+
+%%
+a=1/3; b=6; %[m]
+
+D=transpose(a:abs((a-b)./(length(V)-1)):b); %diameter in [m]
+
+% Changes diameter from meters to feet
+D=D*3.28; % [ft]
+
+% Changes V from meters^3 to feet^3
+V_ft=35.3147.*V';
+
+% Calculates corresponding height to chosen D and
+H = V_ft./(pi.*(D./2).^2); % [ft]
+
+P_BT = EP;%_fuel; %have form EP_fuel
+
+
+%%
+
+Bond_Fin=zeros(10,length(D));
+ROI_BT=[]; TCI=[]; FC=[];
+NPV_0=[]; NPV_proj=[]; NPV_percent=[]; Depreciation=[]; Profit_AT=[];C_F=[];D_CF=[];
+
+
+%Discount factors
+D_fact=zeros(10,1);
+D_fact(1)=1/(1+ER); %discount factors with enterprise rate at year 1
+for k=2:10
+    D_fact(k)=D_fact(k-1)/(1+ER); % discount factors with enterprise rate at subsequent years
+end
+
+%Purchase Cost of Base Equipment
+reac = MAS./280.*101.9.*(D.^1.066).*(H.^0.82 ); % purchasing cost of reactor
+
+A_c = 2*pi*(D./2).*H+2*pi*(D./2).^2;  % area of cylinder
+
+H_E = + MAS/280*101.3*A_c.^0.65 ;% purchasing cost of heat exchanger before separation
+
+
+pressure_pc = MAS./280.*101.9.*(D.^1.066).*(H.^0.82 )
+
+% purchasing costs for columns
+
+PC_column1=MAS./280.*101.9.*((6.26*3.28).^1.066).*((90.5*3.28).^0.82 ) % column1 diameter = 6.2591 m hegight = 90 m
+PC_column2=MAS./280.*101.9.*((5.78*3.28).^1.066).*((76.4*3.28).^0.82 ) % column2 diameter = 5.7796 m hegight = 76.4 m
+PC_column3=MAS./280.*101.9.*((4.86*3.28).^1.066).*((100*3.28).^0.82 ) % column3 diameter = 4.8623 m hegight = 100 m
+PC_column4=MAS./280.*101.9.*((6.26*3.28).^1.066).*((100*3.28).^0.82 ) 
+
+PC_column_tot = PC_column1 + PC_column2 + PC_column3 + PC_column4 ;
+
+%Purchasing cost base equipment
+PCBE = reac + H_E + pressure_pc + PC_column_tot ;
+
+
+% Installed Costs for column 
+ic_column1= MAS./280.*4.7.*((6.26*3.28).^1.55).*(90.5*3.28);  % installed cost of column 1
+ic_column2= MAS./280.*4.7.*((5.78*3.28).^1.55).*(76.4*3.28); % installed cost of column 2
+ic_column3= MAS./280.*4.7.*((4.86*3.28).^1.55).*(100*3.28) ; % installed cost of column 3
+ic_column4= MAS./280.*4.7.*((6.26*3.28).^1.55).*(100*3.28) ; % installed cost of column 3
+
+ic_column_tot = ic_column1 + ic_column2 + ic_column3 + ic_column4 ;
+
+reboiler1=MAS./280*.328.*(5.55*10.^4./11250).^.65.*(249.5.^.65)
+reboiler2=MAS./280*.328.*(7428./11250).^.65.*(169.9.^.65)
+reboiler3= MAS./280*.328.*(5778./11250).^.65.*(116.8.^.65)
+reboiler4= MAS./280*.328.*(5778./11250).^.65.*(116.8.^.65)
+
+reboiler_tot = reboiler1 + reboiler2 + reboiler3 + reboiler4 ;
+
+%partial condenser for each distillation column 
+
+condenser1 = MAS./280*.328.*(6058./3000*log((178-90)/(178-120))).^.65.*249.5.^.65 ;
+condenser2 = MAS./280*.328.*(23320./3000*log((139-90)/(139-120))).^.65.*249.5.^.65 ;
+condenser3 = MAS./280*.328.*(11820./3000*log((231-90)/(231-120))).^.65.*249.5.^.65 ;
+condenser4 = MAS./280*.328.*(11820./3000*log((231-90)/(231-120))).^.65.*249.5.^.65 ;
+
+condenser_tot = condenser1 + condenser2 + condenser3 + condenser4 ;
+
+column1cost=  PC_column1+ic_column1;
+column2cost=  PC_column2+ic_column2;
+column3cost=  PC_column3+ic_column3;
+column4cost=  PC_column4+ic_column4;
+
+column_cost_tot = column1cost + column2cost + column3cost + column4cost ;
+
+ISBL= PCBE.*(F_c+IF) + ic_column_tot + reboiler_tot + condenser_tot; %Installation cost
+
+% hysys column cost
+
+col1= MAS./280.*4.7.*(((1.5*3.28).^1.55).*((3*1+1*187)*3.28+123.28))+ MAS./280.*101.9.*((1.5*3.28).^1.066).*(((3*1+1*187)*3.28).^0.82 )
+col2= MAS./280.*4.7.*(((1.5*3.28).^1.55).*((3*1+1*68)*3.28+123.28))+ MAS./280.*101.9.*((1.5*3.28).^1.066).*(((3*1+1*68)*3.28).^0.82 )
+col3= MAS./280.*4.7.*(((1.5*3.28).^1.55).*((3*1+1*68)*3.28+123.28))+ MAS./280.*101.9.*((1.5*3.28).^1.066).*(((3*1+1*68)*3.28).^0.82 )
+
+
+% Fixed capital
+FC=2.28*ISBL ;
+FC=FC';
+
+
+% Start up
+SU = 0.1.*FC; %SU=10% of FC
+
+% Total Fixed Capital ???
+%FC = 1.1*FC + WC';
+
+
+% Working Capital
+WCap=FC.*.2;
+
+
+% Total investment
+TI = FC * (1+.2+.1);
+
+FC_n3=FC*an3;
+FC_n2=FC*an2;
+FC_n1=FC*an1;
+FC_0=FC*a0;
+
+FC_n3=transpose(FC_n3);
+FC_n2=transpose(FC_n2) ;
+FC_n1=transpose(FC_n1);
+FC_0=transpose(FC_0);
+
+F_d=[(1+CR)^3 (1+CR)^2 (1+CR)^1 1 1 1]; %Discount factors for Y-3 to Y-0 then WC, SU
+
+Cashflow_d=[F_d(1).*FC_n3 F_d(2).*FC_n2 F_d(3).*FC_n1 FC_0.*F_d(4) WCap'.*F_d(5) SU'.*F_d(6)];
+Cashflow_d=Cashflow_d';
+TCI=abs(sum(Cashflow_d));
+
+%%
+% IMPORTANT OUTPUT*********************************************************
+% CALCULATING RETURN OF INVESTMENT BEFORE TAXES -------------------
+ROI_BT=P_BT'./TI; %percent -- make sure to look at (i,j) cell
+
+% b coefficients
+b_1=0.8;
+b_2=0.9;
+b_3=0.95;
+b_coeff=[b_1 b_2 b_3];
+
+% calcs profit before taxes for the first 3 years
+% -----------------------------------------------------------------
+
+% *************************************************************************
+
+
+Profit_BT = transpose(b_coeff)*transpose(P_BT);
+
+Profit_BT = [Profit_BT; repmat(transpose(P_BT),7,1)];
+
+
+
+% CALCULATING BOND FINANCING --------------------------------------
+Bond_Fin = -FR*TCI;
+
+%Depreciation
+Depreciation=-0.1.*FC.*(1+alphaSU); % depriciation allowed -0.1*FC*(1+alpha_Start_Up_Capital)
+%should be 10 by length(D) but all 10 rows are same value
+
+% Bond financing
+Bond_Fin = repmat(Bond_Fin,10,1) ;
+
+%Depreciation=Depreciation'
+Depreciation = repmat(Depreciation,10,1) ;
+
+% Profit after taxes
+Profit_AT = (Profit_BT + Bond_Fin + Depreciation)*(1-TR);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% CALCULATING DISCOUNTED  CASH FLOW ------------------------------
+% Cash flow
+C_F = Profit_AT - Depreciation;
+
+% Discounted cash flow
+D_CF=(repmat(D_fact,1,length(C_F))).*C_F; % discounted cash flows
+
+% Summing discounted cash flow
+sum_D_CF=sum(D_CF);
+% ---------------------------------------------------------------
+%%
+% Alpha salvage value
+SV=FC.*alphasv; %alpha salvage value
+
+% Pay off TCI
+Pay_Off_TCI=-TCI;
+
+% Profit after tax for salvage value
+Profit_AT_SV= SV*(1-TR);
+
+% Discounted cashflow for salvage value
+SV_CF = D_fact(end)*Profit_AT_SV;
+
+% Discounted cashflow for WC
+WC_CF= WCap*D_fact(end);
+
+% Discounted cashflow for WC
+PO_CF= Pay_Off_TCI*D_fact(end);
+
+
+%%
+
+% IMPORTANT OUTPUT*********************************************************
+
+% NPV_0
+NPV_0=sum_D_CF+SV_CF+WC_CF+ PO_CF;
+
+%NPV_proj
+NPV_proj=NPV_0/((1+ER)^Nconst);
+
+%NPV
+NPV_percent=(NPV_proj./TCI./(Nconst+Nop)).*100;
+
+% *************************************************************************
+ROI_BT=ROI_BT*100;
+
+end
