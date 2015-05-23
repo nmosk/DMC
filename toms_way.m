@@ -39,8 +39,8 @@ x0 = [6*10^5;6*10^6;        % L, F_gas_in   [mol/hr]
     5;5;              % r1, r2    [mol/L/hr] (converted from s to hr in function code)
     20]                 % density [mol/L]
     
-selectivity1 = [];
-conversion1 = [];
+selectivity = [];
+conversion = [];
 V = logspace(1.8,3);
 for i = 1:50
 f = @(x)toms_syst(x,P,y0,KH_O2,dens_me,dens_w,dens_dmc,k_1,k_2,n_DMC,V(i),MR);
@@ -49,15 +49,15 @@ f = @(x)toms_syst(x,P,y0,KH_O2,dens_me,dens_w,dens_dmc,k_1,k_2,n_DMC,V(i),MR);
 solved_DMC_mol_per_hr = x(7);
 conv = (x(2) * y0 - x(3)) / ( x(2) * y0 );
 sel = x(7) /(2 * (x(2)* y0 - x(3)));
-conversion1 = [conversion1;conv];
-selectivity1 = [selectivity1;sel];
+conversion = [conversion;conv];
+selectivity = [selectivity;sel];
 end
 
-plot(conversion1,selectivity1,'-o')
+plot(conversion,selectivity,'-o')
 xlabel('conversion, x'); ylabel('selectivity, s')
 title('T = 130, P = 40 bar, y0 = 0.035')
 
 figure(2)
-plot(conversion1,V,'-o')
+plot(conversion,V,'-o')
 xlabel('conversion, x'); ylabel('volume, V [L]')
 title('T = 130, P = 40 bar, y0 = 0.035')
