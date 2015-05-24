@@ -45,7 +45,7 @@
 % -------------------------------------------------------
 
 function [Profit_AT_SV,H_E,SV,P_BT,ROI_BT, reac, V_ft, D_fact ,WC_CF ,PO_CF ,  TCI, H, D, FC,TI, SU, WCap, Profit_BT, Profit_AT, C_F, Cashflow_d, Bond_Fin, D_CF, NPV_0, NPV_proj,NPV_percent,Depreciation] = conceptual_econ_DMC(V, WC, EP,X)
-close all
+
 
 % DISCOUNT CASH FLOW ANALYSIS COEFFICIENTS --------------
 
