@@ -44,7 +44,7 @@
 % water-> H20
 % -------------------------------------------------------
 
-function [Profit_AT_SV,H_E,SV,P_BT,ROI_BT, reac, V_ft, D_fact ,WC_CF ,PO_CF ,  TCI, H, D, FC,TI, SU, WCap, Profit_BT, Profit_AT, C_F, Cashflow_d, Bond_Fin, D_CF, NPV_0, NPV_proj,NPV_percent,Depreciation] = conceptual_econ_DMC(V, WC, EP,X)
+function [Profit_AT_SV,SV,P_BT,ROI_BT, reac, V_ft, D_fact ,WC_CF ,PO_CF ,  TCI, H, D, FC,TI, SU, WCap, Profit_BT, Profit_AT, C_F, Cashflow_d, Bond_Fin, D_CF, NPV_0, NPV_proj,NPV_percent,Depreciation] = conceptual_econ_DMC(V, WC, EP,X)
 
 
 % DISCOUNT CASH FLOW ANALYSIS COEFFICIENTS --------------
@@ -133,67 +133,51 @@ for k=2:10
     D_fact(k)=D_fact(k-1)/(1+ER); % discount factors with enterprise rate at subsequent years
 end
 
-%Purchase Cost of Base Equipment
+%% Purchase Cost of Base Equipment
+
 reac = MAS./280.*101.9.*(D.^1.066).*(H.^0.82 ); % purchasing cost of reactor
 
 A_c = 2*pi*(D./2).*H+2*pi*(D./2).^2;  % area of cylinder
 
-H_E = + MAS/280*101.3*A_c.^0.65 ;% purchasing cost of heat exchanger before separation
-
-
-pressure_pc = MAS./280.*101.9.*(D.^1.066).*(H.^0.82 )
-
 % purchasing costs for columns
 
-PC_column1=MAS./280.*101.9.*((6.26*3.28).^1.066).*((90.5*3.28).^0.82 ) % column1 diameter = 6.2591 m hegight = 90 m
-PC_column2=MAS./280.*101.9.*((5.78*3.28).^1.066).*((76.4*3.28).^0.82 ) % column2 diameter = 5.7796 m hegight = 76.4 m
-PC_column3=MAS./280.*101.9.*((4.86*3.28).^1.066).*((100*3.28).^0.82 ) % column3 diameter = 4.8623 m hegight = 100 m
-PC_column4=MAS./280.*101.9.*((6.26*3.28).^1.066).*((100*3.28).^0.82 ) 
+pc_columns = 1.8e5 ;
 
-PC_column_tot = PC_column1 + PC_column2 + PC_column3 + PC_column4 ;
+% purchasing cost of heater and cooler
+ 
+pc_heat_cool = 1.45e6;
 
 %Purchasing cost base equipment
-PCBE = reac + H_E + pressure_pc + PC_column_tot ;
+
+PCBE = reac + pc_columns + pc_heat_cool ;
+
+%% Installed Costs for column 
+
+% installed costs for reactor
+ic_reac = 1.42E+04 ;
+
+% installed costs for columns
+
+ic_columns = 3.55e4;
+
+% installed cost of heater and cooler
+ 
+ic_heat_cool = 3.29e6;
+
+% installed costs condensers and reboilers
+
+ic_cond_reboil = 3.94e7 ;
+
+%installed cost base equipment
+
+installed_costs = ic_reac + ic_columns + ic_heat_cool + ic_cond_reboil + 3.58e6;
+
+%%
 
 
-% Installed Costs for column 
-ic_column1= MAS./280.*4.7.*((6.26*3.28).^1.55).*(90.5*3.28);  % installed cost of column 1
-ic_column2= MAS./280.*4.7.*((5.78*3.28).^1.55).*(76.4*3.28); % installed cost of column 2
-ic_column3= MAS./280.*4.7.*((4.86*3.28).^1.55).*(100*3.28) ; % installed cost of column 3
-ic_column4= MAS./280.*4.7.*((6.26*3.28).^1.55).*(100*3.28) ; % installed cost of column 3
+ISBL= PCBE.*(F_c+IF) + installed_costs; %Installation cost
 
-ic_column_tot = ic_column1 + ic_column2 + ic_column3 + ic_column4 ;
 
-reboiler1=MAS./280*.328.*(5.55*10.^4./11250).^.65.*(249.5.^.65)
-reboiler2=MAS./280*.328.*(7428./11250).^.65.*(169.9.^.65)
-reboiler3= MAS./280*.328.*(5778./11250).^.65.*(116.8.^.65)
-reboiler4= MAS./280*.328.*(5778./11250).^.65.*(116.8.^.65)
-
-reboiler_tot = reboiler1 + reboiler2 + reboiler3 + reboiler4 ;
-
-%partial condenser for each distillation column 
-
-condenser1 = MAS./280*.328.*(6058./3000*log((178-90)/(178-120))).^.65.*249.5.^.65 ;
-condenser2 = MAS./280*.328.*(23320./3000*log((139-90)/(139-120))).^.65.*249.5.^.65 ;
-condenser3 = MAS./280*.328.*(11820./3000*log((231-90)/(231-120))).^.65.*249.5.^.65 ;
-condenser4 = MAS./280*.328.*(11820./3000*log((231-90)/(231-120))).^.65.*249.5.^.65 ;
-
-condenser_tot = condenser1 + condenser2 + condenser3 + condenser4 ;
-
-column1cost=  PC_column1+ic_column1;
-column2cost=  PC_column2+ic_column2;
-column3cost=  PC_column3+ic_column3;
-column4cost=  PC_column4+ic_column4;
-
-column_cost_tot = column1cost + column2cost + column3cost + column4cost ;
-
-ISBL= PCBE.*(F_c+IF) + ic_column_tot + reboiler_tot + condenser_tot; %Installation cost
-
-% hysys column cost
-
-col1= MAS./280.*4.7.*(((1.5*3.28).^1.55).*((3*1+1*187)*3.28+123.28))+ MAS./280.*101.9.*((1.5*3.28).^1.066).*(((3*1+1*187)*3.28).^0.82 )
-col2= MAS./280.*4.7.*(((1.5*3.28).^1.55).*((3*1+1*68)*3.28+123.28))+ MAS./280.*101.9.*((1.5*3.28).^1.066).*(((3*1+1*68)*3.28).^0.82 )
-col3= MAS./280.*4.7.*(((1.5*3.28).^1.55).*((3*1+1*68)*3.28+123.28))+ MAS./280.*101.9.*((1.5*3.28).^1.066).*(((3*1+1*68)*3.28).^0.82 )
 
 
 % Fixed capital
