@@ -44,7 +44,7 @@
 % water-> H20
 % -------------------------------------------------------
 
-function [Profit_AT_SV,SV,P_BT,ROI_BT, reac, V_ft, D_fact ,WC_CF ,PO_CF ,  TCI, H, D, FC,TI, SU, WCap, Profit_BT, Profit_AT, C_F, Cashflow_d, Bond_Fin, D_CF, NPV_0, NPV_proj,NPV_percent,Depreciation] = conceptual_econ_DMC(V, WC, EP,X)
+function [Profit_AT_SV,SV,P_BT,ROI_BT, ic_reac, V_ft, D_fact ,WC_CF ,PO_CF ,  TCI, H, D, FC,TI, SU, WCap, Profit_BT, Profit_AT, C_F, Cashflow_d, Bond_Fin, D_CF, NPV_0, NPV_proj,NPV_percent,Depreciation] = conceptual_econ_DMC(V, WC, EP,X)
 
 
 % DISCOUNT CASH FLOW ANALYSIS COEFFICIENTS --------------
@@ -133,51 +133,31 @@ for k=2:10
     D_fact(k)=D_fact(k-1)/(1+ER); % discount factors with enterprise rate at subsequent years
 end
 
-%% Purchase Cost of Base Equipment
-
-reac = MAS./280.*101.9.*(D.^1.066).*(H.^0.82 ); % purchasing cost of reactor
-
-A_c = 2*pi*(D./2).*H+2*pi*(D./2).^2;  % area of cylinder
-
-% purchasing costs for columns
-
-pc_columns = 1.8e5 ;
-
-% purchasing cost of heater and cooler
- 
-pc_heat_cool = 1.45e6;
-
-%Purchasing cost base equipment
-
-PCBE = reac + pc_columns + pc_heat_cool ;
-
 %% Installed Costs for column 
 
 % installed costs for reactor
-ic_reac = 1.42E+04 ;
+ic_reac = MAS./280.*101.9.*(D.^1.066).*(H.^0.82 ); % purchasing cost of reactor;
 
 % installed costs for columns
 
-ic_columns = 3.55e4;
+ic_columns = 4.4e4;
 
 % installed cost of heater and cooler
  
-ic_heat_cool = 3.29e6;
+ic_heat_cool_pumps = 8.8e6;
 
 % installed costs condensers and reboilers
 
-ic_cond_reboil = 3.94e7 ;
+ic_cond_reboil = 2.6e7 ;
 
 %installed cost base equipment
 
-installed_costs = ic_reac + ic_columns + ic_heat_cool + ic_cond_reboil + 3.58e6;
+installed_costs = ic_reac + ic_columns + ic_heat_cool_pumps + ic_cond_reboil 
 
 %%
 
 
-ISBL= PCBE.*(F_c+IF) + installed_costs; %Installation cost
-
-
+ISBL= installed_costs; %Installation cost
 
 
 % Fixed capital
@@ -216,6 +196,7 @@ Cashflow_d=Cashflow_d';
 TCI=abs(sum(Cashflow_d));
 
 %%
+
 % IMPORTANT OUTPUT*********************************************************
 % CALCULATING RETURN OF INVESTMENT BEFORE TAXES -------------------
 ROI_BT=P_BT'./TI; %percent -- make sure to look at (i,j) cell
@@ -244,6 +225,7 @@ Bond_Fin = -FR*TCI;
 %Depreciation
 Depreciation=-0.1.*FC.*(1+alphaSU); % depriciation allowed -0.1*FC*(1+alpha_Start_Up_Capital)
 %should be 10 by length(D) but all 10 rows are same value
+
 
 % Bond financing
 Bond_Fin = repmat(Bond_Fin,10,1) ;
