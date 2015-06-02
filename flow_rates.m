@@ -1,8 +1,8 @@
 
 toms_way;
 
-conversion = conversion(5:n - 20);
-selectivity = selectivity(5:n - 20);
+conversion = conversion(15:n - 20);
+selectivity = selectivity(15:n - 20);
 
 MR2 = (1-y0)/y0;
 
