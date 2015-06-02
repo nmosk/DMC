@@ -80,18 +80,22 @@ fuel=[fuel_me fuel_co 0 0 0 price_fuel]; %price_fuel in [$/MMBTU], rest in [$/kg
 %%
 % CALCULATING EP___________________________________________________________
 
-    EP=zeros(length(s),1);
+EP=zeros(length(s),1);
 
-    EP = (price_DMC.*P_DMC - 2.*n_DMC.*price_me.*(MW(1)) - n_DMC./s .* price_co*(MW(2)) - n_DMC./(2.*s).*price_o2.*(MW(3))...
-        - n_DMC.*price_water.*(MW(5)));
-   
-    % Annual costs for operating equipment_________________________________
-   
+% Annual costs for operating equipment_________________________________
+
+ac_reac = 8.4e3 ;
+ac_columns = 4.7e4 ;
+ac_cond_reboil = 7.5e6 ;
+ac_cool_heat_pumps = 6.2e6 ; 
+ac_water_streams = 5.2e5 ; 
+
+annual_costs = ac_reac + ac_columns + ac_cond_reboil + ac_cool_heat_pumps + ac_water_streams
     
-    % reboiler and steam supply
-   % reboiler_1_cost= 8.74*10^-3*
- 
-    
+     EP = (price_DMC.*P_DMC - 2.*n_DMC.*price_me.*(MW(1)) - n_DMC./s .* price_co*(MW(2)) - n_DMC./(2.*s).*price_o2.*(MW(3))...
+        - n_DMC.*price_water.*(MW(5)) - annual_costs );
+
+
 %%
     plot(s,EP)
     axis([0 1 0 10^8])
