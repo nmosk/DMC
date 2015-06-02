@@ -96,13 +96,17 @@ selectivity4 = [selectivity4;sel];
 end
 
 plot(conversion1,selectivity1,'-o',conversion2,selectivity2,'-d',conversion3,selectivity3,'-v',...
-    conversion4,selectivity4,'-s')
-xlabel('conversion, x'); ylabel('selectivity, s')
+    conversion4,selectivity4,'-s','LineWidth',2)
+xlabel('Conversion, X'); ylabel('Selectivity, S')
 title('T = 90, P = 25 bar, y0 = 0.01')
-
+ set(gca,'FontSize',26)
+ line([0.55 0.55], ylim,'Color','r','LineStyle','--','LineWidth',3);
+ 
 figure(2)
 plot(conversion1,V,'-o',conversion2,V,'-d',conversion3,V,'-v',...
-    conversion4,V,'-s')
-xlabel('conversion, x'); ylabel('volume, V [L]')
+    conversion4,V,'-s','LineWidth',2)
+xlabel('conversion, X'); ylabel('Volume, V [L]')
 title('T = 90, P = 25 bar, y0 = 0.01')
 legend('MR = 20','MR = 2','MR = 8','MR = 14','Location','Northwest')
+ set(gca,'FontSize',26)
+ line([0.55 .55], ylim,'Color','r','LineStyle','--','LineWidth',3);

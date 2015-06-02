@@ -89,8 +89,8 @@ ac_columns = 4.7e4 ;
 ac_cond_reboil = 7.5e6 ;
 ac_cool_heat_pumps = 6.2e6 ; 
 ac_water_streams = 5.2e5 ; 
-
-annual_costs = ac_reac + ac_columns + ac_cond_reboil + ac_cool_heat_pumps + ac_water_streams
+vap_recov = 7.35e5 ;
+annual_costs = ac_reac + ac_columns + ac_cond_reboil + ac_cool_heat_pumps + ac_water_streams + vap_recov
     
      EP = (price_DMC.*P_DMC - 2.*n_DMC.*price_me.*(MW(1)) - n_DMC./s .* price_co*(MW(2)) - n_DMC./(2.*s).*price_o2.*(MW(3))...
         - n_DMC.*price_water.*(MW(5)) - annual_costs );

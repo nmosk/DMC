@@ -69,8 +69,19 @@ figure
 plot(conversion,EP)
 
  [Profit_AT_SV,SV,P_BT,ROI_BT, ic_reac, V_ft, D_fact ,WC_CF ,PO_CF ,  TCI, H, D, FC,TI, SU, WCap, Profit_BT, Profit_AT, C_F, Cashflow_d, Bond_Fin, D_CF, NPV_0, NPV_proj,NPV_percent,Depreciation] = conceptual_econ_DMC(V, WC, EP,conversion)
-figure
- plot(conversion,NPV_percent,'o',conversion,ROI_BT,'o')
- 
+
  figure
- plot(conversion,NPV_proj,'o',conversion,TCI,'o')
+ plot(conversion,NPV_percent,conversion,ROI_BT,'LineWidth',3)
+ xlabel('Conversion,X')
+ ylabel('Measure of Profitability [%/year] ')
+ legend('Net Present Value ','Return on Investment ')
+ set(gca,'FontSize',26)
+ line([0.55 0.55], ylim,'Color','r','LineStyle','--','LineWidth',3);
+
+ figure
+ plot(conversion,NPV_proj./10^6,conversion,TCI./10^6,'LineWidth',3)
+ xlabel('Conversion,X')
+ ylabel('Measure of Profitability [$MM]')
+ legend('Net Present Value','Total Capital Investment')
+ set(gca,'FontSize',26)
+ line([0.55 0.55], ylim,'Color','r','LineStyle','--','LineWidth',3);
